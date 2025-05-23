@@ -89,3 +89,54 @@ test project
                                                 ];
                                             }
 22. Создай API Resources php artisan make:resource CategoryResource php artisan make:resource ProductResource
+23. Реализуй методы в контроллерах {
+                                    public function index()
+                                        {
+                                            return CategoryResource::collection(Category::all());
+                                        }
+                                
+                                public function store(StoreCategoryRequest $request)
+                                        {
+                                            $category = Category::create($request->validated());
+                                            return new CategoryResource($category);
+                                        }
+                                
+                                public function show(Category $category)
+                                        {
+                                            return new CategoryResource($category);
+                                        }
+                                
+                                public function update(UpdateCategoryRequest $request, Category $category)
+                                        {
+                                            $category->update($request->validated());
+                                            return new CategoryResource($category);
+                                        }
+                                
+                                public function destroy(Category $category)
+                                        {
+                                            $category->delete();
+                                            return response()->json(null, 204);
+                                        }
+                                }
+    24. class ProductController extends Controller
+                          {
+                          use App\Http\Requests\StoreProductRequest;
+                          use App\Http\Requests\UpdateProductRequest;
+                          use App\Http\Resources\ProductResource;
+                          use App\Models\Product;
+                          
+                          public function index()
+                          {
+                              return ProductResource::collection(Product::with('category')->get());
+                          }
+                          
+                          public function store(StoreProductRequest $request)
+                          {
+                              $product = Product::create($request->validated());
+                              $product->load('category'); // загружаем категорию
+                              return new ProductResource($product);
+                          }
+                          
+                          // реализуй show, update, destroy аналогично CategoryController
+                          }
+                          
