@@ -88,3 +88,4 @@ test project
                                             ];
                                                 ];
                                             }
+22. Создай API Resources php artisan make:resource CategoryResource php artisan make:resource ProductResource
