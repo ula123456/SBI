@@ -166,3 +166,81 @@ php artisan serve
 b) Настрой запросы в Postman
 GET http://127.0.0.1:8000/api/categories
 Получить список категорий
+
+28. 1. Установка maatwebsite/excel composer require maatwebsite/excel
+29. Настройка очередей
+a) Включите очереди через базу: В .env: QUEUE_CONNECTION=database
+30  Создайте таблицу очереди:
+                php artisan queue:table
+                php artisan migrate
+31  Запустите воркер (в отдельной вкладке терминала):php artisan queue:work
+32. Чтобы использовать очереди в Laravel через базу данных, в файле .env пропишите: QUEUE_CONNECTION=database
+33. php artisan make:export ProductsExport --model=Product  Создайте класс экспорта, который определяет, какие данные и в каком виде попадут в Excel.
+34. В контроллере добавьте действие для скачивания Excel-файла: use App\Exports\ProductsExport;
+                                use Maatwebsite\Excel\Facades\Excel;
+                                public function exportExcel()
+                                {
+                                    return Excel::download(new ProductsExport, 'products.xlsx');
+                                }
+35. В routes/api.php   Route::get('products/export', [ProductController::class, 'exportExcel']);
+36. php artisan make:job ExportProductsToExcel Сгенерируйте Job-класс    <?php
+
+                                    namespace App\Jobs;
+                                    
+                                    use App\Exports\ProductsExport;
+                                    use Illuminate\Bus\Queueable;
+                                    use Illuminate\Contracts\Queue\ShouldQueue;
+                                    use Illuminate\Foundation\Bus\Dispatchable;
+                                    use Illuminate\Queue\InteractsWithQueue;
+                                    use Illuminate\Queue\SerializesModels;
+                                    use Illuminate\Support\Facades\Storage;
+                                    use Maatwebsite\Excel\Facades\Excel;
+                                    
+                                    class ExportProductsToExcel implements ShouldQueue
+                                    {
+                                        use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+                                    
+                                        public $filePath;
+                                    
+                                        /**
+                                         * Create a new job instance.
+                                         *
+                                         * @param string $filePath
+                                         */
+                                        public function __construct($filePath = 'exports/products.xlsx')
+                                        {
+                                            $this->filePath = $filePath;
+                                        }
+                                    
+                                        /**
+                                         * Execute the job.
+                                         */
+                                        public function handle()
+                                        {
+                                            // Сохраняем Excel в storage/app/exports/...
+                                            Excel::store(new ProductsExport, $this->filePath, 'local');
+                                            // Здесь можно добавить уведомление пользователю о готовности файла
+                                        }
+                                    }
+37. В начале файла подключите ваш Job: use App\Jobs\ExportProductsToExcel;
+38. Создайте сервис-файл app/Services/ProductService.php   namespace App\Services;
+
+                                                            class ProductService
+                                                            {
+                                                                public function exportProductsToExcel()
+                                                                {
+                                                                    // Здесь ваша логика экспорта
+                                                                }
+                                                            
+                                                                // Добавляйте другие методы для работы с товарами
+                                                            }
+
+39.Пропишите маршрут в routes/api.php   Route::get('products/export', [\App\Http\Controllers\Api\ProductController::class, 'exportExcel']);
+40. Запустите очередь В отдельной вкладке терминала выполните:php artisan queue:work
+41. проверяем на postman http://127.0.0.1:8080/api/products/export
+42 Откройте в браузере/через Postman ваш маршрут для скачивания, например: http://127.0.0.1:8080/api/products/download/products_20250523_181348.xlsx  Если файл существует и очередь отработала — начнётся скачивание Excel-файла.
+
+43 В терминале выполните php artisan serve
+                    Убедитесь, что сервер запущен и отображает адрес и порт.
+                    В Postman или браузере используйте именно этот адрес (и порт).
+                    Если что-то не работает, скопируйте ошибку из терминала сюда — помогу разобратьс
