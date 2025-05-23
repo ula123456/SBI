@@ -139,4 +139,30 @@ test project
                           
                           // реализуй show, update, destroy аналогично CategoryController
                           }
-                          
+    25. Подключи  моделей class Category extends Model
+                            {
+                                public function products()
+                            {
+                                return $this->hasMany(Product::class);
+                            }
+                            }
+
+                  class Product extends Model
+                  {
+                      use HasFactory;
+                  
+                      public function category()
+                          {
+                              return $this->belongsTo(Category::class);
+                          }
+                  }
+26. Работа с whenLoaded()
+27. Проверка через Postman
+a) Запусти сервер Laravel
+
+php artisan serve
+Адрес по умолчанию: http://127.0.0.1:8000
+
+b) Настрой запросы в Postman
+GET http://127.0.0.1:8000/api/categories
+Получить список категорий
