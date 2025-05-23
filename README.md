@@ -54,5 +54,37 @@ test project
                   }
 
 17. database/factories/ProductFactory.php) указываем use App\Models\Category;
+18. Создание контроллеров  php artisan make:controller Api/CategoryController --api /php artisan make:controller Api/ProductController --api
+19. Пропиши маршруты (routes)  use App\Http\Controllers\Api\CategoryController;
+                                use App\Http\Controllers\Api\ProductController;
+                                
+                                Route::apiResource('categories', CategoryController::class);
+                                Route::apiResource('products', ProductController::class);
 
-
+20. Создай Form Request для валидации  php artisan make:request StoreCategoryRequest
+                                        php artisan make:request UpdateCategoryRequest
+                                        php artisan make:request StoreProductRequest
+                                        php artisan make:request UpdateProductRequest
+    21. class StoreCategoryRequest extends FormRequest   public function rules(): array
+                                                            {
+                                                                return [
+                                                                'name' => 'required|string|min:2',
+                                                            ];
+                                    class StoreProductRequest extends FormRequest                        }
+                                          public function rules(): array
+                                            {
+                                                return [
+                                                    return [
+                                                'name' => 'required|string|min:2',
+                                                'price' => 'required|numeric|min:0', // цена не может быть отрицательной
+                                                'barcode' => [
+                                                    'required',
+                                                    'string',
+                                                    'size:13', // EAN-13 – 13 символов
+                                                    'unique:products,barcode',
+                                                    'regex:/^\d{13}$/', // только цифры, 13 штук
+                                                ],
+                                                'category_id' => 'required|exists:categories,id', // категория должна существовать
+                                            ];
+                                                ];
+                                            }
