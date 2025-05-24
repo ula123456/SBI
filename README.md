@@ -1,5 +1,78 @@
 # SBI
-test project
+
+# Laravel Inventory System
+
+## Описание
+
+Простой модуль REST API для учёта товаров и категорий на Laravel.  
+Возможности:
+- CRUD для товаров и категорий
+- Экспорт товаров в Excel с помощью очередей
+- Валидация через Form Request
+- Чистая архитектура: Repository и Service слои
+- Unit-тесты
+
+## Установка
+
+1. Клонируйте репозиторий:
+   ```bash  
+   git clone https://github.com/ula123456/SBI
+   cd SBI
+   ```
+
+2. Установите зависимости:
+   ```
+   composer install
+   ```
+
+3. Создайте файл `.env` (можно скопировать пример):
+   ```
+   cp .env.example .env
+   ```
+   Отредактируйте параметры подключения к вашей базе данных.
+
+4. Сгенерируйте ключ приложения:
+   ```
+   php artisan key:generate
+   ```
+
+5. Выполните миграции и наполните тестовыми данными:
+   ```
+   php artisan migrate --seed
+   ```
+
+## Запуск
+
+- Запустите встроенный сервер Laravel:
+  ```
+  php artisan serve
+  ```
+
+- Запустите очередь (для экспорта в Excel):
+  ```
+  php artisan queue:work
+  ```
+
+- API будет доступен по адресу: `http://localhost:8000/api`
+
+## Тесты
+
+- Запустить тесты:  php artisan test
+  ```
+
+## Пример API
+
+- Список товаров: `GET /api/products`
+- Экспорт товаров: `GET /api/products/export`
+- Создать категорию: `POST /api/categories`
+
+
+
+
+
+ПОШАГОВОЕ описание создания проекта  для себя
+
+
 1. создал проект          composer create-project laravel/laravel inventory-manager 
 3. пака .OSP прописал настройи
 4. установил гит echo "# SBI" >> README.md
