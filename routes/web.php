@@ -9,3 +9,4 @@ use App\Http\Controllers\Api\ProductController;
   Route::apiResource('products', ProductController::class);
   Route::get('products/export', [ProductController::class, 'exportExcel']);
   Route::get('products/export', [\App\Http\Controllers\Api\ProductController::class, 'exportExcel']);
+  Route::get('/', fn() => 'ok');

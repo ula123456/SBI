@@ -1,13 +1,22 @@
 <?php
 
+
+
 namespace App\Services;
+
+use App\Models\Product;
 
 class ProductService
 {
-    public function exportProductsToExcel()
+    public function create(array $data): Product
     {
-        // Здесь ваша логика экспорта
+        return Product::create($data);
     }
 
-    // Добавляйте другие методы для работы с товарами
+    public function update(int $id, array $data): Product
+    {
+        $product = Product::findOrFail($id);
+        $product->update($data);
+        return $product;
+    }
 }

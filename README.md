@@ -244,3 +244,70 @@ a) Включите очереди через базу: В .env: QUEUE_CONNECTIO
                     Убедитесь, что сервер запущен и отображает адрес и порт.
                     В Postman или браузере используйте именно этот адрес (и порт).
                     Если что-то не работает, скопируйте ошибку из терминала сюда — помогу разобратьс
+44. Создайте тест  php artisan make:test ProductServiceTest
+                <?php
+
+                        namespace Tests\Unit;
+
+                        use App\Models\Product;
+                        use App\Models\Category;
+                        use App\Services\ProductService;
+                        use Illuminate\Foundation\Testing\RefreshDatabase;
+                        use Tests\TestCase;
+
+                        class ProductServiceTest extends TestCase
+                        {
+                            use RefreshDatabase;
+
+                            protected ProductService $productService;
+
+                            protected function setUp(): void
+                            {
+                                parent::setUp();
+                                $this->productService = $this->app->make(ProductService::class);
+                            }
+
+                            /** @test */
+                            public function it_creates_a_new_product()
+                            {
+                                $category = Category::factory()->create();
+
+                                $data = [
+                                    'name' => 'Test Product',
+                                    'price' => 123.45,
+                                    'barcode' => '1234567890123',
+                                    'category_id' => $category->id,
+                                ];
+
+                                $product = $this->productService->create($data);
+
+                                $this->assertDatabaseHas('products', [
+                                    'name' => $data['name'],
+                                    'price' => $data['price'],
+                                    'barcode' => $data['barcode'],
+                                    'category_id' => $category->id,
+                                ]);
+                                $this->assertInstanceOf(Product::class, $product);
+                            }
+
+                            /** @test */
+                            public function it_updates_product_price()
+                            {
+                                $category = Category::factory()->create();
+                                $product = Product::factory()->create([
+                                    'category_id' => $category->id,
+                                    'price' => 100,
+                                ]);
+
+                                $updateData = ['price' => 299.99];
+
+                                $updatedProduct = $this->productService->update($product->id, $updateData);
+
+                                $this->assertEquals(299.99, $updatedProduct->price);
+                                $this->assertDatabaseHas('products', [
+                                    'id' => $product->id,
+                                    'price' => 299.99,
+                                ]);
+                            }
+                        }
+Запуск теста   php artisan test
